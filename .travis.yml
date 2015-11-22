@@ -5,6 +5,9 @@ python:
 env:
   - FLASK=0.10.1
 
+before_install:
+  - pip install --upgrade pip
+
 install:
   - pip install flask==$FLASK
 
