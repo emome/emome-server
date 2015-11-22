@@ -9,4 +9,4 @@ install:
   - pip install flask==$FLASK
 
 script:
-  - python test.py
+  - python tests.py
