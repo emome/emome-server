@@ -6,8 +6,7 @@ env:
   - FLASK=0.10.1
 
 install:
-  - pip install flask==$FLASK coverage --use-mirrors
-  - pip install -e . --use-mirrors
+  - pip install flask==$FLASK
 
 script:
   - python test.py
