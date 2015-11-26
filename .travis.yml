@@ -1,15 +1,19 @@
 language: python
 python:
   - "2.7"
-
 env:
   - FLASK=0.10.1
+service:
+  - mongodb
 
 before_install:
   - pip install --upgrade pip
+  - sleep 15
+  - mongo mydb_test --eval 'db.addUser("travis", "test");'
 
 install:
   - pip install flask==$FLASK
+  - pip install pymongo
 
 script:
   - python tests.py
