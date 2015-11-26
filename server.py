@@ -22,6 +22,13 @@ def make_suggestion():
         if status == database.SUCCESS:
             return dumps({"status": "success"})
 
+@app.route('/take_suggestion', methods=['POST'])
+def take_suggestion():
+    if request.method == 'POST':
+        status = database.take_suggestion(request.form['fb_id'], request.form['suggestion_id'], request.form['emotion'], request.form['impact'], request.form['feedback'])
+        if status == database.SUCCESS:
+            return dumps({"status": "success"}) 
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=8080)
