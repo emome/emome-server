@@ -22,20 +22,38 @@ def fb_login(fb_id, name):
     else:
         return LOGIN_STATUS_EXISTING_USER
 
-def make_suggestion(fb_id, measurement, scenario_id, content, message):
+def make_suggestion(fb_id, emotion, scenario_id, content, message):
     coll_suggestion = db['suggestions']
-    measurements = json.loads(str(measurement))
+    emotions = json.loads(str(emotion))
     coll_suggestion.insert_one({
         "user_id": fb_id,
-        "measurement": {
-            "sad": measurements['sad'],
-            "frustrated": measurements['frustrated'],
-            "angry": measurements['angry'],
-            "fearful": measurements['fearful']
+        "emotion": {
+            "sad": emotions['sad'],
+            "frustrated": emotions['frustrated'],
+            "angry": emotions['angry'],
+            "fearful": emotions['fearful']
         },
         "scenario_id": scenario_id,
         "time": datetime.now(),
         "content": content,
         "message": message
+    })
+    return SUCCESS
+
+def take_suggestion(fb_id, suggestion_id, emotion, impact, feedback):
+    coll_history = db['histories']
+    emotions = json.loads(str(emotion))
+    coll_history.insert_one({
+        "user_id": fb_id,
+        "time": datetime.now(),
+        "suggestion_id": suggestion_id,
+        "emotion": {
+            "sad": emotions['sad'],
+            "frustrated": emotions['frustrated'],
+            "angry": emotions['angry'],
+            "fearful": emotions['fearful']
+        },
+        "impact": impact,
+        "feedback": feedback
     })
     return SUCCESS
