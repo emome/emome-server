@@ -3,7 +3,7 @@ python:
   - "2.7"
 env:
   - FLASK=0.10.1
-service:
+services:
   - mongodb
 
 before_install:
