@@ -1,7 +1,6 @@
 import os
 import server
 import unittest
-import tempfile
 import flask
 import flask.ext.pymongo
 import simplejson
