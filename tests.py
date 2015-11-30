@@ -44,7 +44,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         ))
    
     def test_login(self):
-        print "Test: login"
+        print("Test: login")
 
         num_user = server.mongo.db.users.find({'_id': "000000"}).count()
         assert num_user == 0
@@ -84,7 +84,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         return emotion
 
     def test_make_suggestion(self):
-        print "Test: make suggestion"
+        print("Test: make suggestion")
         # setup
         emotion = self.create_emotion()
         self.login("Jean", "000000")
@@ -125,7 +125,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         ))
 
     def test_take_suggestion(self):
-        print "Test: take suggestion"
+        print("Test: take suggestion")
 
         # setup
         emotion = self.create_emotion()
