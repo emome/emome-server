@@ -72,17 +72,17 @@ def make_suggestion():
          
         # check if emotion values are between 0 ~ 10
         if validate_emotion(emotions) == False:
-            print "invalid emotion values"
+            print("invalid emotion values")
             return dumps({'err_msg': "invalid emotion values"}),status.HTTP_403_FORBIDDEN
 
         # check if the user exists
         if validate_user(request.form['user_id']) == False:
-            print "unregistered user"
+            print("unregistered user")
             return dumps({'err_msg': "unregistered user"}), status.HTTP_403_FORBIDDEN
 
         # check if the scenario exists
         if validate_scenario(request.form['scenario_id']) == False:    
-            print "invalid scenario"
+            print("invalid scenario")
             return dumps({'err_msg': "invalid scenario"}), status.HTTP_403_FORBIDDEN
         
         object_id = str(ObjectId())
@@ -112,12 +112,12 @@ def take_suggestion():
 
         # check if the user exists
         if validate_user(request.form['user_id']) == False:
-            print "unregistered user"
+            print("unregistered user")
             return dumps({'err_msg': "unregistered user"}), status.HTTP_403_FORBIDDEN
 
         # check if the suggestion id is valid
         if validate_suggestion(request.form['suggestion_id']) == False:
-            print "invalid suggestion id"
+            print("invalid suggestion id")
             return dumps({'err_msg': "invalid suggestion id"}), status.HTTP_403_FORBIDDEN
 
         object_id = str(ObjectId())
