@@ -119,6 +119,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         # check: invalid scenario id
         print "check: invalid scenario id"
         rv = self.make_suggestion("000000", emotion, 5, "spotify", "Love this song!")
+        print rv.status_code
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
 
     
