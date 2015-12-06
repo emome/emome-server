@@ -115,7 +115,7 @@ class Suggestion(Resource):
         
  
         # check if the user exists
-        if validate_user(args['user_id']) == False:
+        if not validate_user(args['user_id']):
             return {'err_msg': "unregistered user"}, status.HTTP_403_FORBIDDEN
 
         object_id = str(ObjectId())

@@ -40,8 +40,8 @@ class FlaskPyMongoTest(FlaskRequestTest):
 
     def login(self, name, _id):
         return self.app.post('/login', data=dict(
-            name = name,
-            _id = _id
+            name=name,
+            _id=_id
         ))
    
     def test_login(self):
@@ -60,11 +60,11 @@ class FlaskPyMongoTest(FlaskRequestTest):
 
     def make_suggestion(self, user_id, emotion, scenario_id, content, message):
         return self.app.post('/suggestion', data=dict(
-            user_id = user_id,
-            emotion = dumps(emotion),
-            scenario_id = scenario_id,
-            content = content,
-            message = message
+            user_id=user_id,
+            emotion=dumps(emotion),
+            scenario_id=scenario_id,
+            content=content,
+            message=message
         ))
 
     def build_scenario(self):
@@ -125,10 +125,10 @@ class FlaskPyMongoTest(FlaskRequestTest):
     
     def take_suggestion(self, user_id, suggestion_id, emotion, scenario_id):
         return self.app.post('/history', data=dict(
-            user_id = user_id,
-            suggestion_id = suggestion_id,
-            emotion = dumps(emotion),
-            scenario_id = scenario_id
+            user_id=user_id,
+            suggestion_id=suggestion_id,
+            emotion=dumps(emotion),
+            scenario_id=scenario_id
         ))
 
 
