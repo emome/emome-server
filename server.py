@@ -101,6 +101,8 @@ class Suggestion(Resource):
     # make suggestion
     def post(self):
         args = suggestion_parser.parse_args() 
+        
+        print "server, num_scenarios: ", num_scenarios 
  
         # check if the user exists
         if validate_user(args['user_id']) == False:
