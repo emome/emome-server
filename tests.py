@@ -144,7 +144,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         ))
 
 
-    def test_take_suggestion(self):
+    def test_take_action(self):
         print("Test: take suggestion")
 
         # setup
@@ -152,6 +152,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         self.login("Jean", "000000")
         rv = self.make_suggestion("000000", emotion, 2, "spotify", "Love this song!") 
         data = simplejson.loads(str(rv.data))
+        print data
         suggestion_id = data['_id']
 
         # check: normal

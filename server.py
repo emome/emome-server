@@ -79,15 +79,26 @@ def emotion(emotion):
     return emotion
 
 
+def scenario_id(scenario_id):
+    scenario_id = int(scenario_id)    
+    
+    if type(scenario_id) != int:
+        raise ValueError('Expected an int.')
 
-with app.app_context():
-    num_scenarios = mongo.db.scenarios.count()
+    num_scenarios = 0
+    with app.app_context():
+        num_scenarios = mongo.db.scenarios.count()
+    
+    if not scenario_id in range(num_scenarios):
+        raise ValueError('Expected scenario id to be less than '+str(num_scenarios))
+
+    return scenario_id
 
 
 suggestion_parser = reqparse.RequestParser()
 suggestion_parser.add_argument('user_id', type=str, required=True)
 suggestion_parser.add_argument('emotion', type=emotion, required=True)
-suggestion_parser.add_argument('scenario_id', type=int, choices=range(num_scenarios), required=True)
+suggestion_parser.add_argument('scenario_id', type=scenario_id, required=True)
 suggestion_parser.add_argument('content', type=str, required=True)
 suggestion_parser.add_argument('message', type=str, required=True)
 
@@ -102,7 +113,6 @@ class Suggestion(Resource):
     def post(self):
         args = suggestion_parser.parse_args() 
         
-        print "server, num_scenarios: ", num_scenarios 
  
         # check if the user exists
         if validate_user(args['user_id']) == False:
@@ -149,7 +159,7 @@ history_parser = reqparse.RequestParser()
 history_parser.add_argument('user_id', type=str, required=True)
 history_parser.add_argument('suggestion_id', type=str, required=True)
 history_parser.add_argument('emotion', type=emotion, required=True)
-history_parser.add_argument('scenario_id', type=int, choices=range(num_scenarios), required=True)
+history_parser.add_argument('scenario_id', type=scenario_id, required=True)
 
 class History(Resource):
 
