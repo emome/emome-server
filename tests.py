@@ -31,7 +31,9 @@ class FlaskPyMongoTest(FlaskRequestTest):
         server.mongo = flask.ext.pymongo.PyMongo(server.app, config_prefix='TEST')
         server.mongo.cx.drop_database(self.dbname)
 
+        print "setup: build scenario"
         self.build_scenario()
+        print server.mongo.db.scenarios.count()
 
     def tearDown(self):
         server.mongo.cx.drop_database(self.dbname)
@@ -90,6 +92,8 @@ class FlaskPyMongoTest(FlaskRequestTest):
         emotion = self.create_emotion()
         self.login("Jean", "000000")
         
+        print server.mongo.db.scenarios.count()
+ 
         # check: normal
         print "check: normal"
         rv = self.make_suggestion("000000", emotion, 2, "spotify", "Love this song!")
@@ -104,11 +108,15 @@ class FlaskPyMongoTest(FlaskRequestTest):
         assert "spotify" == cursor_suggestion[0]['content']
         assert "Love this song!" == cursor_suggestion[0]['message']        
 
+        print server.mongo.db.scenarios.count()
+        
         # check: unregistered user
         print "check: unregistered user"
         rv = self.make_suggestion("100", emotion, 2, "spotify", "Love this song!")
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
+        print server.mongo.db.scenarios.count()
+        
         # check: invalid emotion values
         print "check: invalid emotion values"
         emotion[server.EMOTION_SAD] = 13
@@ -116,8 +124,12 @@ class FlaskPyMongoTest(FlaskRequestTest):
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
         emotion[server.EMOTION_SAD] = 1
 
+        print server.mongo.db.scenarios.count()
+        
         # check: invalid scenario id
         print "check: invalid scenario id"
+
+        print server.mongo.db.scenarios.count()
         rv = self.make_suggestion("000000", emotion, 5, "spotify", "Love this song!")
         print rv.status_code
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
