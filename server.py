@@ -28,6 +28,9 @@ api = Api(app)
 Login: 
     login[post: user_id, name]
 
+Scenario:
+    pass scenario collection to the frontend[get: scenario_list]
+
 Suggestion: 
     see suggestion[get: message, content]
     make suggestion[post to suggestion table: user_id, emotion, scenario_id, message, content]
@@ -63,6 +66,22 @@ class Login(Resource):
 
 
 
+class Scenario(Resource):
+
+    # pass scenario collection to the frontend
+    def get(self):
+        with app.app_context():
+            scenario_collection = mongo.db.scenarios.find()
+    
+        scenario_dict = {}   
+        for scenario in scenario_collection:
+            scenario_dict[scenario['_id']] = scenario['name']
+
+        print scenario_dict
+        return scenario_dict
+
+
+
 def emotion(emotion):
 
     emotion = json.loads(emotion)
@@ -71,7 +90,7 @@ def emotion(emotion):
         raise ValueError('Expected a dict.')
 
     for e in EMOTION_KEYS:
-        if not emotion.has_key(e):
+        if not e in emotion:
             raise KeyError('Expected key: ' + e)
         if not 0 <= int(emotion[e]) <= 10:
             raise ValueError('Expected value between 0 and 10')
@@ -197,6 +216,7 @@ class History(Resource):
 
 
 api.add_resource(Login, '/login')
+api.add_resource(Scenario, '/scenario')
 api.add_resource(Suggestion, '/suggestion')
 api.add_resource(History, '/history')
 
