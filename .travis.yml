@@ -11,8 +11,6 @@ install:
 - pip install -r requirements.txt
 script:
 - python tests.py
-before_deploy:
-  zip -r EmomeServer .
 deploy:
 - provider: s3
   access_key_id: AKIAJ4GPZ6PLHH6QRJXQ
@@ -33,5 +31,6 @@ deploy:
   deployment_group: Emome_DepGroup
   on: *2
 before_deploy:
+- zip -r EmomeServer .
 - mkdir -p dpl_cd_upload
 - mv EmomeServer.zip dpl_cd_upload/EmomeServer.zip
