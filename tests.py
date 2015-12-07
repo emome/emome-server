@@ -16,8 +16,10 @@ class FlaskRequestTest(unittest.TestCase):
         self.context = server.app.test_request_context('/')
         self.context.push()
 
+
     def tearDown(self):
         self.context.pop()
+
 
 
 class FlaskPyMongoTest(FlaskRequestTest):
@@ -33,16 +35,19 @@ class FlaskPyMongoTest(FlaskRequestTest):
 
         self.build_scenario()
 
+
     def tearDown(self):
         server.mongo.cx.drop_database(self.dbname)
         server.app.extensions['pymongo'].pop('TEST')
         super(FlaskPyMongoTest, self).tearDown()
+
 
     def login(self, name, _id):
         return self.app.post('/login', data=dict(
             name=name,
             _id=_id
         ))
+
    
     def test_login(self):
         print("Test: login")
@@ -58,6 +63,28 @@ class FlaskPyMongoTest(FlaskRequestTest):
         num_user = server.mongo.db.users.find({'_id':"000000"}).count()
         assert num_user == 1
 
+
+    def get_scenario_dict(self):
+        return self.app.get('/scenario')
+    
+
+    def test_get_scenario_dict(self):
+        print("Test: get scenario list")
+
+        rv = self.get_scenario_dict()
+        scenario_dict = loads(rv.data)
+
+        db_scenario_collection = server.mongo.db.scenarios.find()
+        db_scenario_dict = {}
+        for scenario in db_scenario_collection:
+            db_scenario_dict[scenario['_id']] = scenario['name']
+
+        assert len(db_scenario_dict) == len(scenario_dict)
+        for scenario_id in db_scenario_dict:
+            assert str(scenario_id) in scenario_dict
+            assert scenario_dict[str(scenario_id)] == db_scenario_dict[scenario_id]
+
+
     def make_suggestion(self, user_id, emotion, scenario_id, content, message):
         return self.app.post('/suggestion', data=dict(
             user_id=user_id,
@@ -67,6 +94,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
             message=message
         ))
 
+
     def build_scenario(self):
         server.mongo.db.scenarios.insert_many([
             {'_id': 0, 'name': "bossy boss"},
@@ -74,6 +102,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
             {'_id': 2, 'name': "tired of routine tasks"},
             {'_id': 3, 'name': "insomnia"}
         ])
+
 
     def create_emotion(self):
         emotion = {
@@ -83,6 +112,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
             server.EMOTION_ANXIOUS: 1
         }
         return emotion
+
 
     def test_make_suggestion(self):
         print("Test: make suggestion")
@@ -122,7 +152,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         rv = self.make_suggestion("000000", emotion, 5, "spotify", "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
 
-    
+
     def take_suggestion(self, user_id, suggestion_id, emotion, scenario_id):
         return self.app.post('/history', data=dict(
             user_id=user_id,
