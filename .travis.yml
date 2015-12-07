@@ -1,26 +1,35 @@
 language: python
 python:
-  - "2.7"
+- '2.7'
 services:
-  - mongodb
-
+- mongodb
 before_install:
-  - pip install --upgrade pip
-  - sleep 15
-  - mongo mydb_test --eval 'db.addUser("travis", "test");'
-
+- pip install --upgrade pip
+- sleep 15
+- mongo mydb_test --eval 'db.addUser("travis", "test");'
 install:
-  - pip install -r requirements.txt
-
+- pip install -r requirements.txt
 script:
-  - python tests.py
-
+- python tests.py
 deploy:
-  - provider: s3
-  - provider: codedeploy
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
-    bucket: codedeploybucket-emome
-    key: EmomeServer.zip
-    application: EmomeServer
-    deployment_group: Emome_DepGroup
+- provider: s3
+  access_key_id: AKIAJ4GPZ6PLHH6QRJXQ
+  secret_access_key: &1
+    secure: n5AceFes8AGUX7NErf0YySb1kGYOPnt+2AMtahQPNdWwyJbTUMujUqDNMdb5u1913pzqOanOVJYkNyGayVlvO3L439lDskPtik6sp70kLwEXChy3wA7OR9iZFNOdsoir3Pny1Znko4km9EjAlIuY6H4LCkjTfJm0gbmUxV95XYqTl7BPgNaUd/V6QHuXlZIt2CfnPLDTWN9xjGaVG5KYWZI9t58+9ReCvt6epK5hpmp89gDLvgi12yzkJs620u9+HQwuxufsLY8FQ/A2N94xzRYqC+IxNOCDGDStdAqRXLNJcnk96LlFTzKvMhNlKWk0HdIrhedNjxHE0Bl6dHggpWXrW4Q/c7JLpYeep3PGHqwZhJLRVhGQTr8masXOtC/bcpJyKc4ccOrLFmXctxj2HLv84puVxmH5KnioloRBHI8N1no3YfwU10revIBIHfKYHAcXoYYyeNwY9lE289jbV7azjpimX6+swISJMcUmtzWcNaB2dybtaI3+ey+Sqmp/IMApGQNgMC8lm7pLNGLzAK7sw7ySdm+b3nnY9A28w7x9KBaW8N5ug47kZdFhSbpurGSLJ237qBHA6f5+UnVUExlaIx/A2PEwqdkiJeh1ZzOSQPtc3ANqRlgpNzMOPK5PImJUwnP359KtgWJlfrV0cG9MQkUHsaAyuH6Tk2KIMuM=
+  local_dir: dpl_cd_upload
+  skip_cleanup: true
+  on: &2
+    repo: emome/emome-server
+  bucket: codedeploybucket-emome
+- provider: codedeploy
+  access_key_id: AKIAJ4GPZ6PLHH6QRJXQ
+  secret_access_key: *1
+  bucket: codedeploybucket-emome
+  key: EmomeServer.zip
+  bundle_type: zip
+  application: EmomeServer
+  deployment_group: Emome_DepGroup
+  on: *2
+before_deploy:
+- mkdir -p dpl_cd_upload
+- mv EmomeServer.zip dpl_cd_upload/EmomeServer.zip
