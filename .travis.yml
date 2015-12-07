@@ -18,7 +18,7 @@ script:
 deploy:
   - provider: s3
   - provider: codedeploy
-	  access_key_id: $AWS_ACCESS_KEY
+    access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     bucket: codedeploybucket-emome
     key: EmomeServer.zip
