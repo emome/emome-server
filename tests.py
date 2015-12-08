@@ -72,7 +72,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         print("Test: get scenario list")
 
         rv = self.get_scenario_dict()
-        scenario_dict = loads(rv.data)
+        scenario_dict = loads(rv.data)['data']
 
         db_scenario_collection = server.mongo.db.scenarios.find()
         db_scenario_dict = {}
@@ -97,10 +97,10 @@ class FlaskPyMongoTest(FlaskRequestTest):
 
     def build_scenario(self):
         server.mongo.db.scenarios.insert_many([
-            {'_id': 0, 'name': "bossy boss"},
-            {'_id': 1, 'name': "rainy day sucks"},
-            {'_id': 2, 'name': "tired of routine tasks"},
-            {'_id': 3, 'name': "insomnia"}
+            {'_id': '0', 'name': "bossy boss"},
+            {'_id': '1', 'name': "rainy day sucks"},
+            {'_id': '2', 'name': "tired of routine tasks"},
+            {'_id': '3', 'name': "insomnia"}
         ])
 
 
@@ -122,27 +122,27 @@ class FlaskPyMongoTest(FlaskRequestTest):
  
         # check: normal
         print "check: normal"
-        rv = self.make_suggestion("000000", emotion, 2, "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
         assert rv.status_code == status.HTTP_200_OK
         data = simplejson.loads(str(rv.data))
         assert "success" == data["status"]
-        cursor_suggestion = server.mongo.db.suggestions.find({'_id': data['_id']})
+        cursor_suggestion = server.mongo.db.suggestions.find({'_id': data['data']})
         assert 1 == cursor_suggestion.count()
         assert "000000" == cursor_suggestion[0]['user_id']
         assert emotion == cursor_suggestion[0]['emotion']
-        assert 2 == cursor_suggestion[0]['scenario_id']
+        assert '2' == cursor_suggestion[0]['scenario_id']
         assert "spotify" == cursor_suggestion[0]['content']
         assert "Love this song!" == cursor_suggestion[0]['message']        
 
         # check: unregistered user
         print "check: unregistered user"
-        rv = self.make_suggestion("100", emotion, 2, "spotify", "Love this song!")
+        rv = self.make_suggestion("100", emotion, '2', "spotify", "Love this song!")
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
         # check: invalid emotion values
         print "check: invalid emotion values"
         emotion[server.EMOTION_SAD] = 13
-        rv = self.make_suggestion("000000", emotion, 2, "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
         emotion[server.EMOTION_SAD] = 1
 
@@ -166,22 +166,23 @@ class FlaskPyMongoTest(FlaskRequestTest):
         print("Test: take suggestion")
 
         # setup
+        print "check: setup"
         emotion = self.create_emotion()
         self.login("Jean", "000000")
-        rv = self.make_suggestion("000000", emotion, 2, "spotify", "Love this song!") 
+        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
         data = simplejson.loads(str(rv.data))
-        suggestion_id = data['_id']
+        suggestion_id = data['data']
 
         # check: normal
         print "check: normal"
-        rv = self.take_suggestion("000000", suggestion_id, emotion, 3)
+        rv = self.take_suggestion("000000", suggestion_id, emotion, '3')
         data = simplejson.loads(str(rv.data))
-        history_id = data['_id']
-        cursor_history = server.mongo.db.histories.find({'_id': data['_id']})
+        history_id = data['data']
+        cursor_history = server.mongo.db.histories.find({'_id': data['data']})
         assert "000000" == cursor_history[0]['user_id']
         assert suggestion_id == cursor_history[0]['suggestion_id']
         assert emotion == cursor_history[0]['emotion']
-        assert 3 == cursor_history[0]['scenario_id']
+        assert '3' == cursor_history[0]['scenario_id']
 
         # check: unregisted user
         print "check: unregistered user"

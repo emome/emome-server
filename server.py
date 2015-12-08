@@ -77,8 +77,7 @@ class Scenario(Resource):
         for scenario in scenario_collection:
             scenario_dict[scenario['_id']] = scenario['name']
 
-        print scenario_dict
-        return scenario_dict
+        return {'data': scenario_dict, 'status': "success"}
 
 
 
@@ -99,16 +98,15 @@ def emotion(emotion):
 
 
 def scenario_id(scenario_id):
-    scenario_id = int(scenario_id)    
     
-    if type(scenario_id) != int:
-        raise ValueError('Expected an int.')
+    if type(scenario_id) != unicode:
+        raise ValueError('Expected a unicode.')
 
     num_scenarios = 0
     with app.app_context():
         num_scenarios = mongo.db.scenarios.count()
     
-    if not scenario_id in range(num_scenarios):
+    if not int(scenario_id) in range(num_scenarios):
         raise ValueError('Expected scenario id to be less than '+str(num_scenarios))
 
     return scenario_id
@@ -126,13 +124,12 @@ class Suggestion(Resource):
 
     # see suggestion
     def get(self):
-        return {'status': "Haha under construction...(But we have continuous deployment now!)"}
+        return {'data': None, 'status': "Haha under construction...(But we have continuous deployment now!)"}
 
     # make suggestion
     def post(self):
         args = suggestion_parser.parse_args() 
         
- 
         # check if the user exists
         if not validate_user(args['user_id']):
             return {'err_msg': "unregistered user"}, status.HTTP_403_FORBIDDEN
@@ -147,13 +144,13 @@ class Suggestion(Resource):
                 EMOTION_ANGRY: int(args['emotion'][EMOTION_ANGRY]),
                 EMOTION_ANXIOUS: int(args['emotion'][EMOTION_ANXIOUS])
             },
-            'scenario_id': int(args['scenario_id']),
+            'scenario_id': args['scenario_id'],
             'time': datetime.now(),
             'content': args['content'],
             'message': args['message'],
             'impact': None
         })
-        return {'_id': object_id, 'status': "success"}
+        return {'data': object_id, 'status': "success"}
 
 
 def validate_user(user_id):
@@ -205,13 +202,13 @@ class History(Resource):
                 EMOTION_ANGRY: int(args['emotion'][EMOTION_ANGRY]),
                 EMOTION_ANXIOUS: int(args['emotion'][EMOTION_ANXIOUS])
             },
-            'scenario_id': int(args['scenario_id']),
+            'scenario_id': args['scenario_id'],
             'time': datetime.now(),
             'rating': None,
             'feedback': None,
             'drawing': None
         })
-        return {'_id': object_id, 'status': "success"}
+        return {'data': object_id, 'status': "success"}
 
 
 
