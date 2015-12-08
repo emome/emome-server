@@ -90,7 +90,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
             user_id=user_id,
             emotion=dumps(emotion),
             scenario_id=scenario_id,
-            content=content,
+            content=dumps(content),
             message=message
         ))
 
@@ -113,16 +113,25 @@ class FlaskPyMongoTest(FlaskRequestTest):
         }
         return emotion
 
+    
+    def create_content(self):
+        content = {
+            'type': "spotify",
+            'data': "9999999"
+        }    
+        return content
+
 
     def test_make_suggestion(self):
         print("Test: make suggestion")
         # setup
         emotion = self.create_emotion()
+        content = self.create_content()
         self.login("Jean", "000000")
  
         # check: normal
         print "check: normal"
-        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_200_OK
         data = simplejson.loads(str(rv.data))
         assert "success" == data["status"]
@@ -131,25 +140,35 @@ class FlaskPyMongoTest(FlaskRequestTest):
         assert "000000" == cursor_suggestion[0]['user_id']
         assert emotion == cursor_suggestion[0]['emotion']
         assert '2' == cursor_suggestion[0]['scenario_id']
-        assert "spotify" == cursor_suggestion[0]['content']
+        assert "spotify" == cursor_suggestion[0]['content']['type']
+        assert "9999999" == cursor_suggestion[0]['content']['data']
         assert "Love this song!" == cursor_suggestion[0]['message']        
 
         # check: unregistered user
         print "check: unregistered user"
-        rv = self.make_suggestion("100", emotion, '2', "spotify", "Love this song!")
+        rv = self.make_suggestion("100", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
         # check: invalid emotion values
         print "check: invalid emotion values"
         emotion[server.EMOTION_SAD] = 13
-        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
         emotion[server.EMOTION_SAD] = 1
 
         # check: invalid scenario id
         print "check: invalid scenario id"
 
-        rv = self.make_suggestion("000000", emotion, 5, "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, 5, content, "Love this song!")
+        assert rv.status_code == status.HTTP_400_BAD_REQUEST
+
+        # check: invalid suggestion
+        print "check: invalid content"
+        content_miss_type = {'data': 999}
+        rv = self.make_suggestion("000000", emotion, '2', content_miss_type, "Love this song!")
+        assert rv.status_code == status.HTTP_400_BAD_REQUEST
+        content_miss_data = {'type': "Spotify"}
+        rv = self.make_suggestion("000000", emotion, '2', content_miss_data, "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -168,8 +187,10 @@ class FlaskPyMongoTest(FlaskRequestTest):
         # setup
         print "check: setup"
         emotion = self.create_emotion()
+        content = self.create_content()
+        
         self.login("Jean", "000000")
-        rv = self.make_suggestion("000000", emotion, '2', "spotify", "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         data = simplejson.loads(str(rv.data))
         suggestion_id = data['data']
 

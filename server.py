@@ -112,11 +112,26 @@ def scenario_id(scenario_id):
     return scenario_id
 
 
+def content(content):
+
+    content = json.loads(content)
+
+    if type(content) != dict:
+        raise ValueError('Expected {\'type\': API_TYPE, \'data\': DATA}')
+
+    if not 'type' in content:
+        raise ValueError('Expected an Api type')
+
+    if not 'data' in content:
+        raise ValueError('Expected suggestion data')
+
+    return content
+
 suggestion_parser = reqparse.RequestParser()
 suggestion_parser.add_argument('user_id', type=str, required=True)
 suggestion_parser.add_argument('emotion', type=emotion, required=True)
 suggestion_parser.add_argument('scenario_id', type=scenario_id, required=True)
-suggestion_parser.add_argument('content', type=str, required=True)
+suggestion_parser.add_argument('content', type=content, required=True)
 suggestion_parser.add_argument('message', type=str, required=True)
 
 get_suggestion_parser = reqparse.RequestParser()
@@ -130,13 +145,12 @@ class Suggestion(Resource):
     # see suggestion
     def get(self):
         args = get_suggestion_parser.parse_args()
-        print args
 
         # do some processing to retrieve suggestions
         # ...
    
         suggestion_list = []
-        suggestion_list.append({'suggestion_id': "12345", 'content': "Yelp something", 'message': "Hi, how are you? Take some rest :)"})
+        suggestion_list.append({'suggestion_id': "12345", 'content': {'type': 'Yelp', 'data': '7777777'}, 'message': "Hi, how are you? Take some rest :)"})
         
         return {'data': suggestion_list, 'status': "success"}
 
