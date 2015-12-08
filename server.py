@@ -119,12 +119,26 @@ suggestion_parser.add_argument('scenario_id', type=scenario_id, required=True)
 suggestion_parser.add_argument('content', type=str, required=True)
 suggestion_parser.add_argument('message', type=str, required=True)
 
+get_suggestion_parser = reqparse.RequestParser()
+get_suggestion_parser.add_argument('user_id', type=str, required=True)
+get_suggestion_parser.add_argument('emotion', type=emotion, required=True)
+get_suggestion_parser.add_argument('scenario_id', type=scenario_id, required=True)
+
 
 class Suggestion(Resource):
 
     # see suggestion
     def get(self):
-        return {'data': None, 'status': "Haha under construction...(But we have continuous deployment now!)"}
+        args = get_suggestion_parser.parse_args()
+        print args
+
+        # do some processing to retrieve suggestions
+        # ...
+   
+        suggestion_list = []
+        suggestion_list.append({'suggestion_id': "12345", 'content': "Yelp something", 'message': "Hi, how are you? Take some rest :)"})
+        
+        return {'data': suggestion_list, 'status': "success"}
 
     # make suggestion
     def post(self):
