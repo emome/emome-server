@@ -126,7 +126,7 @@ class Suggestion(Resource):
 
     # see suggestion
     def get(self):
-        return {'status': "under construction..."}
+        return {'status': "Haha under construction...(But we have continuous deployment now!)"}
 
     # make suggestion
     def post(self):
