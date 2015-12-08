@@ -1,2 +1,2 @@
 #!/bin/bash
-start uwsgi
+restart uwsgi
