@@ -25,7 +25,7 @@ deploy:
   access_key_id: AKIAJ4GPZ6PLHH6QRJXQ
   secret_access_key: *1
   bucket: codedeploybucket-emome
-  key: latest/Emome-Server.zip
+  key: Emome-Server.zip
   bundle_type: zip
   application: EmomeServer
   deployment_group: Emome_DepGroup
