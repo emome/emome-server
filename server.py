@@ -89,7 +89,7 @@ def emotion(emotion):
         raise ValueError('Expected a dict.')
 
     for e in EMOTION_KEYS:
-        if not e in emotion:
+        if e not in emotion:
             raise KeyError('Expected key: ' + e)
         if not 0 <= int(emotion[e]) <= 10:
             raise ValueError('Expected value between 0 and 10')
@@ -106,7 +106,7 @@ def scenario_id(scenario_id):
     with app.app_context():
         num_scenarios = mongo.db.scenarios.count()
     
-    if not int(scenario_id) in range(num_scenarios):
+    if int(scenario_id) not in range(num_scenarios):
         raise ValueError('Expected scenario id to be less than '+str(num_scenarios))
 
     return scenario_id
@@ -119,10 +119,10 @@ def content(content):
     if type(content) != dict:
         raise ValueError('Expected {\'type\': API_TYPE, \'data\': DATA}')
 
-    if not 'type' in content:
+    if 'type' not in content:
         raise ValueError('Expected an Api type')
 
-    if not 'data' in content:
+    if 'data' not in content:
         raise ValueError('Expected suggestion data')
 
     return content

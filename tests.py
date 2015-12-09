@@ -130,7 +130,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         self.login("Jean", "000000")
  
         # check: normal
-        print "check: normal"
+        print("check: normal")
         rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_200_OK
         data = simplejson.loads(str(rv.data))
@@ -145,25 +145,25 @@ class FlaskPyMongoTest(FlaskRequestTest):
         assert "Love this song!" == cursor_suggestion[0]['message']        
 
         # check: unregistered user
-        print "check: unregistered user"
+        print("check: unregistered user")
         rv = self.make_suggestion("100", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
         # check: invalid emotion values
-        print "check: invalid emotion values"
+        print("check: invalid emotion values")
         emotion[server.EMOTION_SAD] = 13
         rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
         emotion[server.EMOTION_SAD] = 1
 
         # check: invalid scenario id
-        print "check: invalid scenario id"
+        print("check: invalid scenario id")
 
         rv = self.make_suggestion("000000", emotion, 5, content, "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
 
         # check: invalid suggestion
-        print "check: invalid content"
+        print("check: invalid content")
         content_miss_type = {'data': 999}
         rv = self.make_suggestion("000000", emotion, '2', content_miss_type, "Love this song!")
         assert rv.status_code == status.HTTP_400_BAD_REQUEST
@@ -185,7 +185,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         print("Test: take suggestion")
 
         # setup
-        print "check: setup"
+        print("check: setup")
         emotion = self.create_emotion()
         content = self.create_content()
         
@@ -195,7 +195,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         suggestion_id = data['data']
 
         # check: normal
-        print "check: normal"
+        print("check: normal")
         rv = self.take_suggestion("000000", suggestion_id, emotion, '3')
         data = simplejson.loads(str(rv.data))
         history_id = data['data']
@@ -206,12 +206,12 @@ class FlaskPyMongoTest(FlaskRequestTest):
         assert '3' == cursor_history[0]['scenario_id']
 
         # check: unregisted user
-        print "check: unregistered user"
+        print("check: unregistered user")
         rv = self.take_suggestion("100", suggestion_id, emotion,3)
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
         # check: invalid suggestion id
-        print "check: invalid suggestion id"
+        print("check: invalid suggestion id")
         rv = self.take_suggestion("000000", "123", emotion, 3)
         assert rv.status_code == status.HTTP_403_FORBIDDEN
 
