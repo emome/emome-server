@@ -6,8 +6,8 @@ services:
 - mongodb
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -y numpy
-- sudo apt-get install -y scipy
+- sudo apt-get install -y python-numpy
+- sudo apt-get install -y python-scipy
 - pip install --upgrade pip
 - sleep 15
 - mongo mydb_test --eval 'db.addUser("travis", "test");'
