@@ -154,12 +154,31 @@ class Suggestion(Resource):
         anxious = args['emotion']['anxious']                
         
         suggestion_ids = extract_suggestion.extract_suggestion_ids(int(sad), int(frustrated), int(angry), int(anxious))
-        return {'data': suggestion_ids, 'status': "success"}    
+        print suggestion_ids
+        #return {'data': suggestion_ids, 'status': "success"}    
         
-        '''
-        cursor = mongo.db.suggestions.find()
-        print cursor.count()
+        
         suggestion_list = []
+        for suggestion_id in suggestion_ids:
+            cursor = mongo.db.suggestions.find({'_id': suggestion_id})
+            print cursor.count()
+            if cursor.count() == 1:
+                data = cursor[0]
+                suggestion_list.append({
+                    'suggestion_id': data['_id'], 
+                    'content': {
+                        'type': data['content']['type'],
+                        'data': data['content']['data']
+                    },
+                    'message': data['message'],
+                })
+       
+        print suggestion_list
+        return {'data': suggestion_list, 'status': "success"}
+        
+
+
+        '''
         for data in cursor[:5]:
             suggestion_list.append({
                 'suggestion_id': data['_id'], 
