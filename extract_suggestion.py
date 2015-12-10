@@ -1,6 +1,7 @@
 from sys import argv
 from sklearn.cluster import KMeans
-from sklearn.externals import joblib
+#from sklearn.externals import joblib
+import pickle
 from sklearn import preprocessing
 import numpy as np
 import csv
@@ -17,7 +18,10 @@ def extract_suggestion_ids(sad, frustrated, angry, anxious):
     # input normalization
     input_emotion = preprocessing.normalize(np.array(input_emotion).reshape(1, -1))
 
-    clf = joblib.load('suggestion_kmeans.pkl')
+    #clf = joblib.load('suggestion_kmeans.pkl')
+    pkl_file = open('song_kmeans.pkl', 'rb')    
+    clf = pickle.load(pkl_file)
+
     predicted_class = clf.predict(input_emotion)
     #print predicted_class
 

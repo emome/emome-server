@@ -157,7 +157,7 @@ class Suggestion(Resource):
         print suggestion_ids
         #return {'data': suggestion_ids, 'status': "success"}    
         
-        
+                
         suggestion_list = []
         for suggestion_id in suggestion_ids:
             cursor = mongo.db.suggestions.find({'_id': suggestion_id})
