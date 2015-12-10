@@ -9,6 +9,8 @@ from bson.objectid import ObjectId
 from flask.ext.api import status
 from flask_restful import Resource, Api, reqparse
 import json
+import extract_songs
+
 
 
 EMOTION_SAD = 'sad'
@@ -44,16 +46,16 @@ History:
 '''
 
 
-login_parser = reqparse.RequestParser()
-login_parser.add_argument('_id', type=str)
-login_parser.add_argument('name', type=str)
+user_parser = reqparse.RequestParser()
+user_parser.add_argument('_id', type=str)
+user_parser.add_argument('name', type=str)
 
 
-class Login(Resource):
+class User(Resource):
 
-    # facebook login
+    # user login
     def post(self):            
-        args = login_parser.parse_args()
+        args = user_parser.parse_args()
         if mongo.db.users.find({'_id': args['_id']}).count() == 0:
             mongo.db.users.insert_one({
                 '_id': args['_id'],
@@ -145,10 +147,18 @@ class Suggestion(Resource):
     # see suggestion
     def get(self):
         args = get_suggestion_parser.parse_args()
-
+        print type(args), args
+        
         # do some processing to retrieve suggestions
-        # ...
-   
+        sad = args['emotion']['sad']
+        frustrated = args['emotion']['frustrated']
+        angry = args['emotion']['angry']
+        anxious = args['emotion']['anxious']                
+        print sad, frustrated, angry, anxious
+        
+        songs = extract_songs.extract_songs(int(sad), int(frustrated), int(angry), int(anxious))
+        print songs        
+
         suggestion_list = []
         suggestion_list.append({'suggestion_id': "12345", 'content': {'type': 'Yelp', 'data': '7777777'}, 'message': "Hi, how are you? Take some rest :)"})
         
@@ -240,7 +250,7 @@ class History(Resource):
 
 
 
-api.add_resource(Login, '/login')
+api.add_resource(User, '/user')
 api.add_resource(Scenario, '/scenario')
 api.add_resource(Suggestion, '/suggestion')
 api.add_resource(History, '/history')

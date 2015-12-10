@@ -42,23 +42,23 @@ class FlaskPyMongoTest(FlaskRequestTest):
         super(FlaskPyMongoTest, self).tearDown()
 
 
-    def login(self, name, _id):
-        return self.app.post('/login', data=dict(
+    def user_login(self, name, _id):
+        return self.app.post('/user', data=dict(
             name=name,
             _id=_id
         ))
 
    
     def test_login(self):
-        print("Test: login")
+        print("Test: user_login")
 
         num_user = server.mongo.db.users.find({'_id': "000000"}).count()
         assert num_user == 0
-        rv = self.login("Jean", "000000")
+        rv = self.user_login("Jean", "000000")
         assert {'status': "new user"} == json.loads(rv.data)
         num_user = server.mongo.db.users.find({'_id': "000000"}).count()
         assert num_user == 1
-        rv = self.login("Jean", "000000")
+        rv = self.user_login("Jean", "000000")
         assert {'status': "existing user"} == json.loads(rv.data)
         num_user = server.mongo.db.users.find({'_id':"000000"}).count()
         assert num_user == 1
@@ -113,6 +113,24 @@ class FlaskPyMongoTest(FlaskRequestTest):
         }
         return emotion
 
+
+    # ***********
+
+    def test_get_suggestion(self):
+        print "Test: ******* get suggestion"
+
+        # setup
+        emotion = self.create_emotion()
+        self.user_login("Jean", "000000")
+        
+        print self.app.get('/suggestion', data=dict(
+            user_id="000000",
+            scenario_id = "2",
+            emotion=dumps(emotion)
+        ))
+
+
+    # ***********
     
     def create_content(self):
         content = {
@@ -127,7 +145,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         # setup
         emotion = self.create_emotion()
         content = self.create_content()
-        self.login("Jean", "000000")
+        self.user_login("Jean", "000000")
  
         # check: normal
         print("check: normal")
@@ -189,7 +207,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         emotion = self.create_emotion()
         content = self.create_content()
         
-        self.login("Jean", "000000")
+        self.user_login("Jean", "000000")
         rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         data = simplejson.loads(str(rv.data))
         suggestion_id = data['data']
