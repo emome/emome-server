@@ -9,7 +9,9 @@ virtualenv:
 before_install:
 - sudo apt-get update -qq
 - git clone https://github.com/scikit-learn/scikit-learn.git
+- cd scikit-learn/
 - sudo python setup.py install
+- cd ../
 - pip install --upgrade pip
 - sleep 15
 - mongo mydb_test --eval 'db.addUser("travis", "test");'
