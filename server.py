@@ -158,10 +158,29 @@ class Suggestion(Resource):
         songs = extract_songs.extract_songs(int(sad), int(frustrated), int(angry), int(anxious))
         print songs        
 
+        cursor = mongo.db.suggestions.find()
+        print cursor.count()
+        suggestion_list = []
+        for data in cursor[:5]:
+            suggestion_list.append({
+                'suggestion_id': data['_id'], 
+                'content': {
+                    'type': data['content']['type'],
+                    'data': data['content']['data']
+                },
+                'message': data['message'],
+            })
+
+        return {'data': suggestion_list, 'status': "success"}
+
+
+        '''
         suggestion_list = []
         suggestion_list.append({'suggestion_id': "12345", 'content': {'type': 'Yelp', 'data': '7777777'}, 'message': "Hi, how are you? Take some rest :)"})
         
         return {'data': suggestion_list, 'status': "success"}
+        '''
+
 
     # make suggestion
     def post(self):

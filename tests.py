@@ -117,17 +117,24 @@ class FlaskPyMongoTest(FlaskRequestTest):
     # ***********
 
     def test_get_suggestion(self):
-        print "Test: ******* get suggestion"
+        print "Test: get suggestion"
 
         # setup
         emotion = self.create_emotion()
         self.user_login("Jean", "000000")
+        content = self.create_content()
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
+        rv = self.make_suggestion("000000", emotion, '2', content, "Love this song!")
         
-        print self.app.get('/suggestion', data=dict(
+        print("check: load suggestions")
+        results = self.app.get('/suggestion', data=dict(
             user_id="000000",
             scenario_id = "2",
             emotion=dumps(emotion)
         ))
+        assert "success" == simplejson.loads(results.data)['status']
+        assert 3 == len(simplejson.loads(results.data)['data'])
 
 
     # ***********
