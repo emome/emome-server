@@ -8,7 +8,7 @@ from bson.objectid import ObjectId
 from flask.ext.api import status
 from flask_restful import Resource, Api, reqparse, abort
 import json
-#import extract_songs
+import extract_songs
 
 
 
