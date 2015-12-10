@@ -8,7 +8,8 @@ virtualenv:
   system_site_packages: true
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -qq python-numpy python-scipy python-sklearn
+- git clone https://github.com/scikit-learn/scikit-learn.git
+- sudo python setup.py install
 - pip install --upgrade pip
 - sleep 15
 - mongo mydb_test --eval 'db.addUser("travis", "test");'
