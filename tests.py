@@ -114,8 +114,6 @@ class FlaskPyMongoTest(FlaskRequestTest):
         return emotion
 
 
-    # ***********
-
     def test_get_suggestion(self):
         print "Test: get suggestion"
 
@@ -134,10 +132,8 @@ class FlaskPyMongoTest(FlaskRequestTest):
             emotion=dumps(emotion)
         ))
         assert "success" == simplejson.loads(results.data)['status']
-        assert 3 == len(simplejson.loads(results.data)['data'])
+        assert len(simplejson.loads(results.data)['data']) <= 10
 
-
-    # ***********
     
     def create_content(self):
         content = {
