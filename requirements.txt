@@ -5,6 +5,4 @@ Flask-PyMongo == 0.4.0
 Flask-API == 0.6.4
 flask-restful == 0.3.4
 uwsgi == 2.0.11.2
-numpy >= 1.6.1
-scipy >= 0.9
 scikit-learn == 0.17
