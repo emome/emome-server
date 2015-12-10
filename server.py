@@ -8,7 +8,7 @@ from bson.objectid import ObjectId
 from flask.ext.api import status
 from flask_restful import Resource, Api, reqparse, abort
 import json
-import extract_songs
+#import extract_songs
 
 
 
@@ -148,6 +148,7 @@ class Suggestion(Resource):
         args = get_suggestion_parser.parse_args()
         print type(args), args
         
+        '''
         # do some processing to retrieve suggestions
         sad = args['emotion']['sad']
         frustrated = args['emotion']['frustrated']
@@ -157,6 +158,7 @@ class Suggestion(Resource):
         
         songs = extract_songs.extract_songs(int(sad), int(frustrated), int(angry), int(anxious))
         print songs        
+        '''
 
         cursor = mongo.db.suggestions.find()
         print cursor.count()
