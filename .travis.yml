@@ -4,7 +4,7 @@ python:
 services:
 - mongodb
 before_install:
-- brew update && brew update
+- brew update || brew update
 - brew install numpy
 - brew install scipy
 - pip install --upgrade pip
