@@ -1,14 +1,15 @@
-from flask import Flask
+from flask import Flask, request
 from flask.ext.pymongo import PyMongo
-from flask import request
 from datetime import datetime
 import simplejson
 from bson.json_util import dumps
 from bson import json_util
 from bson.objectid import ObjectId
 from flask.ext.api import status
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api, reqparse, abort
 import json
+#import extract_songs
+
 
 
 EMOTION_SAD = 'sad'
@@ -44,16 +45,16 @@ History:
 '''
 
 
-login_parser = reqparse.RequestParser()
-login_parser.add_argument('_id', type=str)
-login_parser.add_argument('name', type=str)
+user_parser = reqparse.RequestParser()
+user_parser.add_argument('_id', type=str)
+user_parser.add_argument('name', type=str)
 
 
-class Login(Resource):
+class User(Resource):
 
-    # facebook login
+    # user login
     def post(self):            
-        args = login_parser.parse_args()
+        args = user_parser.parse_args()
         if mongo.db.users.find({'_id': args['_id']}).count() == 0:
             mongo.db.users.insert_one({
                 '_id': args['_id'],
@@ -145,14 +146,43 @@ class Suggestion(Resource):
     # see suggestion
     def get(self):
         args = get_suggestion_parser.parse_args()
-
+        print type(args), args
+        
+        '''
         # do some processing to retrieve suggestions
-        # ...
-   
+        sad = args['emotion']['sad']
+        frustrated = args['emotion']['frustrated']
+        angry = args['emotion']['angry']
+        anxious = args['emotion']['anxious']                
+        print sad, frustrated, angry, anxious
+        
+        songs = extract_songs.extract_songs(int(sad), int(frustrated), int(angry), int(anxious))
+        print songs        
+        '''
+
+        cursor = mongo.db.suggestions.find()
+        print cursor.count()
+        suggestion_list = []
+        for data in cursor[:5]:
+            suggestion_list.append({
+                'suggestion_id': data['_id'], 
+                'content': {
+                    'type': data['content']['type'],
+                    'data': data['content']['data']
+                },
+                'message': data['message'],
+            })
+
+        return {'data': suggestion_list, 'status': "success"}
+
+
+        '''
         suggestion_list = []
         suggestion_list.append({'suggestion_id': "12345", 'content': {'type': 'Yelp', 'data': '7777777'}, 'message': "Hi, how are you? Take some rest :)"})
         
         return {'data': suggestion_list, 'status': "success"}
+        '''
+
 
     # make suggestion
     def post(self):
@@ -199,17 +229,17 @@ def validate_suggestion(suggestion_id):
         return True
 
 
-history_parser = reqparse.RequestParser()
-history_parser.add_argument('user_id', type=str, required=True)
-history_parser.add_argument('suggestion_id', type=str, required=True)
-history_parser.add_argument('emotion', type=emotion, required=True)
-history_parser.add_argument('scenario_id', type=scenario_id, required=True)
+historyList_parser = reqparse.RequestParser()
+historyList_parser.add_argument('user_id', type=str, required=True)
+historyList_parser.add_argument('suggestion_id', type=str, required=True)
+historyList_parser.add_argument('emotion', type=emotion, required=True)
+historyList_parser.add_argument('scenario_id', type=scenario_id, required=True)
 
-class History(Resource):
+class HistoryList(Resource):
 
     # take action
     def post(self):
-        args = history_parser.parse_args() 
+        args = historyList_parser.parse_args() 
  
         # check if the user exists
         if not validate_user(args['user_id']):
@@ -236,14 +266,61 @@ class History(Resource):
             'feedback': None,
             'drawing': None
         })
+
         return {'data': object_id, 'status': "success"}
 
 
 
-api.add_resource(Login, '/login')
+def history_id(history_id):
+    
+    if mongo.db.histories.find({'_id': history_id}).count() == 0:
+        raise ValueError('Invalid history id')
+
+    return history_id
+
+
+history_parser = reqparse.RequestParser()
+history_parser.add_argument('rating', type=int, choices=range(1,6), required=True)
+
+
+class History(Resource):
+    
+    def get(self, history_id):
+        
+        if mongo.db.histories.find({'_id': history_id}).count() == 0:
+            abort(404, message="History {} doesn't exist".format(history_id))
+        
+        cursor = mongo.db.histories.find({'_id': history_id})
+        data = cursor[0]
+        return {
+                    'data': {
+                        'user_id': data['user_id'],
+                        'scenario_id': data['scenario_id'],
+                        'suggestion_id': data['suggestion_id'],
+                        'history_id': data['_id']
+                    }, 
+                    'status': "success"
+                }
+
+    def put(self, history_id):
+       
+        args = history_parser.parse_args() 
+        result = mongo.db.histories.update_one(
+            {'_id': history_id},
+            {
+                "$set": {'rating': args['rating']}
+            }
+        )
+        return {'data': "nice job!", 'status': "success"}
+
+
+
+
+api.add_resource(User, '/user')
 api.add_resource(Scenario, '/scenario')
 api.add_resource(Suggestion, '/suggestion')
-api.add_resource(History, '/history')
+api.add_resource(HistoryList, '/history')
+api.add_resource(History, '/history/<history_id>')
 
 
 if __name__ == '__main__':
