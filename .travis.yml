@@ -1,12 +1,13 @@
 language: python
+sudo: true
 python:
 - '2.7'
 services:
 - mongodb
 before_install:
-- brew update || brew update
-- brew install numpy
-- brew install scipy
+- sudo apt-get update -qq
+- sudo apt-get install -y numpy
+- sudo apt-get install -y scipy
 - pip install --upgrade pip
 - sleep 15
 - mongo mydb_test --eval 'db.addUser("travis", "test");'
