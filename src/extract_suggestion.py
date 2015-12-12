@@ -17,13 +17,13 @@ def extract_suggestion_ids(sad, frustrated, angry, anxious):
     # input normalization
     input_emotion = preprocessing.normalize(np.array(input_emotion).reshape(1, -1))
 
-    pkl_file = open('/model/suggestion_kmeans.pkl', 'rb')    
+    pkl_file = open('model/suggestion_kmeans.pkl', 'rb')    
     clf = pickle.load(pkl_file)
 
     predicted_class = clf.predict(input_emotion)
 
     suggestion_clusters = []
-    with open('/data/suggestion_clusters.csv', 'rb') as csvfile:
+    with open('data/suggestion_clusters.csv', 'rb') as csvfile:
         lines = csv.reader(csvfile)
         for line in lines:
             suggestion_clusters.append(line)
