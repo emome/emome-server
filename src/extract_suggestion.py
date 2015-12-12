@@ -23,7 +23,7 @@ def extract_suggestion_ids(sad, frustrated, angry, anxious):
     predicted_class = clf.predict(input_emotion)
 
     suggestion_clusters = []
-    with open('../data/suggestion_clusters.csv', 'rb') as csvfile:
+    with open('/data/suggestion_clusters.csv', 'rb') as csvfile:
         lines = csv.reader(csvfile)
         for line in lines:
             suggestion_clusters.append(line)
