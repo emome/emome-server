@@ -88,9 +88,9 @@ class FlaskPyMongoTest(FlaskRequestTest):
     def make_suggestion(self, user_id, emotion, scenario_id, content, message):
         return self.app.post('/suggestion', data=dict(
             user_id=user_id,
-            emotion=dumps(emotion),
+            emotion=simplejson.dumps(emotion),
             scenario_id=scenario_id,
-            content=dumps(content),
+            content=simplejson.dumps(content),
             message=message
         ))
 
@@ -129,7 +129,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         results = self.app.get('/suggestion', data=dict(
             user_id="000000",
             scenario_id = "2",
-            emotion=dumps(emotion)
+            emotion=simplejson.dumps(emotion)
         ))
         assert "success" == simplejson.loads(results.data)['status']
         assert len(simplejson.loads(results.data)['data']) <= 10
@@ -197,7 +197,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
         return self.app.post('/history', data=dict(
             user_id=user_id,
             suggestion_id=suggestion_id,
-            emotion=dumps(emotion),
+            emotion=simplejson.dumps(emotion),
             scenario_id=scenario_id
         ))
 

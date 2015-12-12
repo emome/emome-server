@@ -26,7 +26,7 @@ api = Api(app)
 
 
 '''
-Login: 
+User: 
     login[post: user_id, name]
 
 Scenario:
@@ -175,22 +175,6 @@ class Suggestion(Resource):
        
         print suggestion_list
         return {'data': suggestion_list, 'status': "success"}
-        
-
-
-        '''
-        for data in cursor[:5]:
-            suggestion_list.append({
-                'suggestion_id': data['_id'], 
-                'content': {
-                    'type': data['content']['type'],
-                    'data': data['content']['data']
-                },
-                'message': data['message'],
-            })
-
-        return {'data': suggestion_list, 'status': "success"}
-        '''
 
 
     # make suggestion
