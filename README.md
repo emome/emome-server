@@ -28,5 +28,5 @@ python server.py # Listen to port 5000
 
 #### Testing
 ```
-python tests.py
+python src/tests.py
 ```
