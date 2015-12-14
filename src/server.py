@@ -87,7 +87,7 @@ def emotion(emotion):
     emotion = json.loads(emotion)
 
     if type(emotion) != dict:
-        raise ValueError('Expected a dict.')
+        raise TypeError('Expected a dict.')
 
     for e in EMOTION_KEYS:
         if e not in emotion:
@@ -101,7 +101,7 @@ def emotion(emotion):
 def scenario_id(scenario_id):
     
     if type(scenario_id) != unicode:
-        raise ValueError('Expected a unicode.')
+        raise TypeError('Expected a unicode.')
 
     num_scenarios = 0
     with app.app_context():
@@ -118,13 +118,13 @@ def content(content):
     content = json.loads(content)
 
     if type(content) != dict:
-        raise ValueError('Expected {\'type\': API_TYPE, \'data\': DATA}')
+        raise TypeError('Expected {\'type\': API_TYPE, \'data\': DATA}')
 
     if 'type' not in content:
-        raise ValueError('Expected an Api type')
+        raise TypeError('Expected an Api type')
 
     if 'data' not in content:
-        raise ValueError('Expected suggestion data')
+        raise TypeError('Expected suggestion data')
 
     return content
 
