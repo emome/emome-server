@@ -12,12 +12,20 @@ example usage: python extract_songs.py 3 2 4 5
 '''
 
 def extract_suggestion_ids(sad, frustrated, angry, anxious):
-    input_emotion = [float(sad), float(frustrated), float(angry), float(anxious)]
+
+    input_emotion = [ \
+        float(sad), \
+        float(frustrated), \
+        float(angry), \
+        float(anxious) \
+    ]
 
     # input normalization
-    input_emotion = preprocessing.normalize(np.array(input_emotion).reshape(1, -1))
+    input_emotion = preprocessing.normalize( \
+        np.array(input_emotion).reshape(1, -1) \
+    )
 
-    pkl_file = open('model/suggestion_kmeans.pkl', 'rb')    
+    pkl_file = open('model/suggestion_kmeans.pkl', 'rb') 
     clf = pickle.load(pkl_file)
 
     predicted_class = clf.predict(input_emotion)
@@ -28,6 +36,9 @@ def extract_suggestion_ids(sad, frustrated, angry, anxious):
         for line in lines:
             suggestion_clusters.append(line)
 
-    random_suggestions = random.sample(suggestion_clusters[predicted_class], min(len(suggestion_clusters[predicted_class]), 10))
+    random_suggestions = random.sample( \
+        suggestion_clusters[predicted_class], \
+        min(len(suggestion_clusters[predicted_class]), 10) \
+    )
 
     return random_suggestions

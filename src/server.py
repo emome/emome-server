@@ -16,7 +16,12 @@ EMOTION_SAD = 'sad'
 EMOTION_FRUSTRATED = 'frustrated'
 EMOTION_ANGRY = 'angry'
 EMOTION_ANXIOUS = 'anxious'
-EMOTION_KEYS = [EMOTION_SAD, EMOTION_FRUSTRATED, EMOTION_ANGRY, EMOTION_ANXIOUS]
+EMOTION_KEYS = [ \
+    EMOTION_SAD, \
+    EMOTION_FRUSTRATED, \
+    EMOTION_ANGRY, \
+    EMOTION_ANXIOUS \
+]
 
 app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'primer'
@@ -24,9 +29,8 @@ mongo = PyMongo(app,config_prefix='MONGO')
 api = Api(app)
 
 
-
 '''
-User: 
+User:
     login[post: user_id, name]
 
 Scenario:
@@ -34,13 +38,17 @@ Scenario:
 
 Suggestion: 
     see suggestion[get: message, content]
-    make suggestion[post to suggestion table: user_id, emotion, scenario_id, message, content]
+    make suggestion[post to suggestion table: 
+        user_id, emotion, scenario_id, message, content
+    ]
 
 SuggestionImpact:
-    see effect[get:impact]    
+    see effect[get:impact] 
 
 History:
-    take action[post to history table: user_id, suggestion_id, emotion, scenario_id]
+    take action[post to history table: 
+        user_id, suggestion_id, emotion, scenario_id
+    ]
     give feedback[put: history_id, rating, feedback]
 '''
 
@@ -53,7 +61,7 @@ user_parser.add_argument('name', type=str)
 class User(Resource):
 
     # user login
-    def post(self):            
+    def post(self): 
         args = user_parser.parse_args()
         if mongo.db.users.find({'_id': args['_id']}).count() == 0:
             mongo.db.users.insert_one({
@@ -66,20 +74,18 @@ class User(Resource):
             return {'status': "existing user"}
 
 
-
 class Scenario(Resource):
 
     # pass scenario collection to the frontend
     def get(self):
         with app.app_context():
             scenario_collection = mongo.db.scenarios.find()
-    
+ 
         scenario_dict = {}   
         for scenario in scenario_collection:
             scenario_dict[scenario['_id']] = scenario['name']
 
         return {'data': scenario_dict, 'status': "success"}
-
 
 
 def emotion(emotion):
@@ -94,21 +100,23 @@ def emotion(emotion):
             raise KeyError('Expected key: ' + e)
         if not 0 <= int(emotion[e]) <= 10:
             raise ValueError('Expected value between 0 and 10')
-    
+ 
     return emotion
 
 
 def scenario_id(scenario_id):
-    
+ 
     if type(scenario_id) != unicode:
         raise TypeError('Expected a unicode.')
 
     num_scenarios = 0
     with app.app_context():
         num_scenarios = mongo.db.scenarios.count()
-    
+ 
     if int(scenario_id) not in range(num_scenarios):
-        raise ValueError('Expected scenario id to be less than '+str(num_scenarios))
+        raise ValueError('Expected scenario id to be less than ' \
+            +str(num_scenarios) \
+        )
 
     return scenario_id
 
@@ -146,17 +154,19 @@ class Suggestion(Resource):
     # see suggestion
     def get(self):
         args = get_suggestion_parser.parse_args()
-        
+ 
         # do some processing to retrieve suggestions
         sad = args['emotion']['sad']
         frustrated = args['emotion']['frustrated']
         angry = args['emotion']['angry']
-        anxious = args['emotion']['anxious']                
-        
-        suggestion_ids = extract_suggestion.extract_suggestion_ids(int(sad), int(frustrated), int(angry), int(anxious))
-        print suggestion_ids
-        #return {'data': suggestion_ids, 'status': "success"}    
-        
+        anxious = args['emotion']['anxious']
+ 
+        suggestion_ids = extract_suggestion.extract_suggestion_ids( \
+            int(sad), \
+            int(frustrated), \
+            int(angry), \
+            int(anxious) \
+        )
                 
         suggestion_list = []
         for suggestion_id in suggestion_ids:
@@ -172,15 +182,14 @@ class Suggestion(Resource):
                     },
                     'message': data['message'],
                 })
-       
-        print suggestion_list
+ 
         return {'data': suggestion_list, 'status': "success"}
 
 
     # make suggestion
     def post(self):
         args = suggestion_parser.parse_args() 
-        
+ 
         # check if the user exists
         if not validate_user(args['user_id']):
             return {'err_msg': "unregistered user"}, status.HTTP_403_FORBIDDEN
@@ -228,6 +237,7 @@ historyList_parser.add_argument('suggestion_id', type=str, required=True)
 historyList_parser.add_argument('emotion', type=emotion, required=True)
 historyList_parser.add_argument('scenario_id', type=scenario_id, required=True)
 
+
 class HistoryList(Resource):
 
     # take action
@@ -263,9 +273,8 @@ class HistoryList(Resource):
         return {'data': object_id, 'status': "success"}
 
 
-
 def history_id(history_id):
-    
+ 
     if mongo.db.histories.find({'_id': history_id}).count() == 0:
         raise ValueError('Invalid history id')
 
@@ -273,11 +282,13 @@ def history_id(history_id):
 
 
 history_parser = reqparse.RequestParser()
-history_parser.add_argument('rating', type=int, choices=range(1,6), required=True)
+history_parser.add_argument( \
+    'rating', type=int, choices=range(1, 6), required=True \
+)
 
 
 class History(Resource):
-    
+ 
     def get(self, history_id):
         
         if mongo.db.histories.find({'_id': history_id}).count() == 0:
@@ -291,13 +302,13 @@ class History(Resource):
                         'scenario_id': data['scenario_id'],
                         'suggestion_id': data['suggestion_id'],
                         'history_id': data['_id']
-                    }, 
+                    },
                     'status': "success"
                 }
 
     def put(self, history_id):
-       
-        args = history_parser.parse_args() 
+ 
+        args = history_parser.parse_args()
         result = mongo.db.histories.update_one(
             {'_id': history_id},
             {
@@ -305,8 +316,6 @@ class History(Resource):
             }
         )
         return {'data': "nice job!", 'status': "success"}
-
-
 
 
 api.add_resource(User, '/user')
