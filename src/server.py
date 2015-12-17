@@ -171,7 +171,6 @@ class Suggestion(Resource):
         suggestion_list = []
         for suggestion_id in suggestion_ids:
             cursor = mongo.db.suggestions.find({'_id': suggestion_id})
-            print cursor.count()
             if cursor.count() == 1:
                 data = cursor[0]
                 suggestion_list.append({
