@@ -115,7 +115,7 @@ class FlaskPyMongoTest(FlaskRequestTest):
 
 
     def test_get_suggestion(self):
-        print "Test: get suggestion"
+        print("Test: get suggestion")
 
         # setup
         emotion = self.create_emotion()
